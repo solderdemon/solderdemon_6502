@@ -1,0 +1,42 @@
+#------------------------------------------------------------
+#                            ___ ___ ___ ___
+#  ___ ___ ___ ___ ___      |  _| __|   |__ |
+# |  _| . |_ -|  _| . |     | . |__ | | | __|
+# |_| |___|___|___|___|_____|___|___|___|___|
+#                     |_____|   
+#------------------------------------------------------------
+# Copyright (c)2022-2024 Ross Bamford and contributors
+# See top-level LICENSE.md for licence information.
+#
+# Makefile - Vasm simple asm test
+#------------------------------------------------------------
+
+VASM=vasm6502_oldstyle
+VLINK=vlink
+ASFLAGS=-quiet -wdc02 -opt-branch -Fvobj -I../../firmware/inc
+LDFLAGS=-e_start -bihex
+
+LOADADDR := 0x0800
+
+TARGET := $(shell basename $(CURDIR))
+SOURCES := $(wildcard *.asm)
+OBJECTS := $(TARGET).o $(filter-out $(TARGET).o,$(addsuffix .o,$(basename $(SOURCES))))
+
+all: $(TARGET).hex
+
+clean:
+	$(RM) *.o *.lst *.bin *.hex *.sym *.dis
+
+$(OBJECTS): $(SOURCES) $(MAKEFILE_LIST)
+
+$(TARGET).hex: $(OBJECTS)
+	$(VLINK) $(LDFLAGS) -Ttext $(LOADADDR) -M$(TARGET).sym -o $@ $(OBJECTS)
+	$(VLINK) -brawbin1 -Ttext $(LOADADDR) -o $(TARGET).bin $(OBJECTS)
+	da65 --comments 4 --cpu 65c02 --start-addr $(LOADADDR) $(TARGET).bin >$(TARGET).dis
+
+# assemble file.asm to file.o using vasm
+%.o : %.asm
+	$(VASM) $(ASFLAGS) -L $(basename $<).lst -o $@ $<
+
+.PHONY: all clean
+
