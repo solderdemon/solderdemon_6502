@@ -4,7 +4,39 @@
 
 The PLDs implement hardware logic. Their JEDEC files are programmed separately from the EEPROM; building ROM does not update the PLDs.
 
-## Device and file mapping
+r5 boards have one ATF1502AS CPLD (IC2) instead of the two r4 GALs and the 555. See the next section. The rest of this page covers r4.
+
+## r5: IC2 (ATF1502AS)
+
+| Position | Function | Directory | Programming file |
+| --- | --- | --- | --- |
+| IC2 | Address decoder, glue logic and reset generator | [cpld](../code/pld/cpld) | `ic2_glue.jed` |
+
+The source is CUPL (`ic2_glue.pld`). It needs WinCUPL and Atmel's fitter; the
+[`dinoboards/cpld-toolchain`](https://codeberg.org/dinoboards/cpld-toolchain) Docker image bundles both:
+
+```sh
+bash code/pld/cpld/build.sh          # -> ic2_glue.jed and ic2_glue.fit
+python tools/check_cpld.py           # equations against the r4 GAL fuses, and the reset counter
+```
+
+`build.sh` fails unless the fitter reports that the design fits with JTAG enabled. `check_cpld.py`
+needs only Python 3. It compares the CUPL equations, input for input, with the r4 JEDEC files in
+`address_decoder/` and `glue/`, and it steps the reset counter through power-up and a bouncing
+button press. Run both after every change to the equations.
+
+Program IC2 in the board through J8, the JTAG header (10-pin Altera/ATDH1150USB layout, pin 1 =
+TCK). With Microchip's ATDH1150USB cable, load `ic2_glue.jed` in ATMISP. ATMISP can also write an
+SVF file for other JTAG adapters.
+
+- **First programming:** fit only IC2, then program it. A blank CPLD drives none of the chip
+  selects, and the 65C02 is not held in reset.
+- **Reprogramming:** connect J5 pin 10 (/RESET) to J5 pin 6 (GND) first, so the CPU stays in reset
+  while the CPLD's outputs are frozen.
+
+The TL866/T48 route used for the GALs below does not apply to IC2.
+
+## r4: device and file mapping
 
 | Position | Function | Directory | Programming file |
 | --- | --- | --- | --- |
@@ -42,7 +74,7 @@ Compilation must finish without errors and generate the corresponding `.jed`. Re
 
 If the equations have not changed, you can use the checked-in JEDEC files after confirming the board revision and device assignments.
 
-## Program IC2
+## r4: program IC2
 
 With board power disconnected, remove IC2 and insert it into the programmer according to its placement instructions. From the repository root:
 
@@ -57,7 +89,7 @@ The script executes:
 minipro -p 'ATF22V10C(UES)' -w ic2_address_decoder.jed
 ```
 
-## Program IC5
+## r4: program IC5
 
 Insert IC5 into the programmer separately. From the repository root:
 

@@ -16,16 +16,19 @@
 | minipro does not recognize the profile | Support for the exact device; do not substitute a similar name |
 | PLD script cannot find JEDEC | Run from the directory containing the corresponding `burn.sh` |
 | Write or verification failure | Orientation, contacts, profile and correct file for the device |
+| r5: JTAG cable does not find IC2 | J8 pin 1 = TCK, board powered, IC2 seated in its PLCC socket in the right orientation |
+| r5: `build.sh` says the design does not fit | Read `ic2_glue.fit`; keep the outputs in block A (pins 4–16), see the note in `ic2_glue.pld` |
 
 ## Board and terminal
 
 | Symptom | Check |
 | --- | --- |
-| No output | 5 V power, JP1/JP2, UART A, TX/RX/GND, ROM and IC2/IC5 placement |
+| No output | 5 V power, JP1/JP2, UART A, TX/RX/GND, ROM and IC2/IC5 placement (r4) or a programmed IC2 (r5) |
+| r5: /RESET never goes high | IC2 not programmed, or no clock from X1: IC2 only ends reset after 2^18 PHI2 cycles |
 | Garbled text | 38400, 8N1, flow control disabled and common ground |
 | Unexpected Enter or line display behavior | Send one CR and display received CR as CRLF |
 | Incorrect ROM detection | EEPROM model, complete image, four-bank order and bank selection lines |
-| RAM bank test failure | IC2, IC5, bank register, RAM and solder joints on the relevant signals |
+| RAM bank test failure | IC2, IC5 (r4), bank register, RAM and solder joints on the relevant signals |
 | Hang when calling screen APIs | `CLRSCR`, `MOVEXY` and `SETCURSOR` jump to themselves in the current RAM table |
 | Intel HEX CRC errors | Add a line delay, use text transfer and reload |
 

@@ -11,8 +11,10 @@
 | 16 KiB low RAM | Permanently mapped memory, stack and system structures |
 | 16 × 32 KiB RAM | Banked memory; 528 KiB total including low RAM |
 | AT28C64B or AT28C256 | 8 KiB ROM or four 8 KiB banks |
-| IC2 | Address decoder PLD |
-| IC5 | Glue logic PLD |
+| IC2 | r4: address decoder PLD (ATF22V10C). r5: ATF1502AS CPLD with the decoder, glue logic and reset generator |
+| IC5 | r4 only: glue logic PLD (ATF22V10C) |
+| IC4 | r4 only: NE555 reset timer; r5 generates reset in IC2 |
+| J8 | r5 only: JTAG header for programming IC2 in the board |
 
 The original README specifies up to 14 MHz in theory, with 10 MHz as the testing target. This does not guarantee that every combination of components will operate at that frequency.
 
@@ -55,9 +57,9 @@ The introductory table in `defines.inc` disagrees with the constants about zero 
 
 ## Board design files
 
-- [KiCad schematic](../design/kicad/rosco_6502.kicad_sch), [PDF schematic](../design/kicad/rosco_6502.pdf).
-- [PCB](../design/kicad/rosco_6502.kicad_pcb), [KiCad project](../design/kicad/rosco_6502.kicad_pro).
-- [Component CSV](../design/kicad/rosco_6502.csv), [manufacturing files](../design/CAMOutputs).
+- [KiCad schematic](../design/kicad/solderdemon_6502.kicad_sch), [PDF schematic](../design/kicad/solderdemon_6502.pdf). The KiCad files are SolderDemon 6502 r1 (developed as r5); the rosco_6502 r4 files are in git history (commit `febedf81d62ee84a51998f37c9de908616646e20`).
+- [PCB](../design/kicad/solderdemon_6502.kicad_pcb), [KiCad project](../design/kicad/solderdemon_6502.kicad_pro).
+- [Component CSV](../design/kicad/solderdemon_6502.csv), [manufacturing files](../design/CAMOutputs).
 - [Firmware constants](../code/firmware/inc/defines.inc), [ROM linker configuration](../code/firmware/rosco_6502_32K.cfg).
 
-Before manufacturing, check that the schematic, PCB and Gerber revisions match. The PLD source headers still say r1, whereas the hardware notice covers r4.
+The Gerbers and drill files in `design/CAMOutputs` are exported from the r1 board (see [r1 notes](revision-5.md)); the r4 Gerbers are in git history. The r4 GAL source headers say r1: that is an upstream rosco_6502 revision number, not SolderDemon r1.

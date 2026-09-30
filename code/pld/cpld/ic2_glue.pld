@@ -1,0 +1,136 @@
+Name     Rosco6502Glue;
+PartNo   ATF1502AS;
+Date     2026-09-26;
+Revision r5;
+Designer rosco_6502;
+Company  The Really Old-School Company;
+Assembly rosco_6502 r5;
+Location IC2;
+Device   f1502ispplcc44;
+
+/*
+ * rosco_6502 r5, IC2: address decoder, glue logic and reset generator in one ATF1502AS-10JU44.
+ *
+ * Replaces three chips of r4: the ATF22V10C address decoder (IC2), the ATF22V10C glue (IC5) and
+ * the NE555 reset timer (IC4, with C19, C20 and R9). The decoder and glue equations are the same
+ * as code/pld/address_decoder/ic2_address_decoder.pld and code/pld/glue/ic5_glue_logic.pld;
+ * tools/check_cpld.py proves that, input for input, against the fuses of the r4 JEDEC files, and
+ * runs the reset generator below through power-up and a button press.
+ *
+ * Memory map:
+ *   $0000-$3FFF  low RAM (U2)                   $C000-$C00F  DUART (IC3), $C010-$DFFF reserved
+ *   $4000-$BFFF  banked RAM (U1), 16 x 32 KiB   $E000-$FFFF  ROM (U3), 4 x 8 KiB with AT28C256
+ *   $0000/$0001  write: bank register (U4, 74HCT174); A0 is not decoded, so it needs no pin
+ *
+ * Timing against r4: what crossed both GALs (/ROMOE, RDY, BANKCLK from the address) takes one
+ * 10 ns delay instead of two of 7.5 ns. What crossed one GAL gets 2.5 ns slower: /LOWRAM,
+ * /BANKRAM, /DUASEL, and /RD, /WR, BANKCLK from PHI2. An ATF1502AS-7 restores r4 on every path.
+ *
+ * BANKCLK keeps the r4 behaviour on purpose: it pulses twice during a write to $0000, once with
+ * garbage before the data bus settles and once after PHI2 falls with the right data. The 74HCT174
+ * keeps the second one. See the r4 note in ic5_glue_logic.pld before "fixing" it.
+ *
+ * Reset: RC0..RC18 count PHI2 from zero, and /RESET is held low until RC18 sets, i.e. for 2^18
+ * clocks: 19 ms at 14 MHz, 26 ms at 10 MHz, 0.26 s at 1 MHz (the r4 555 gave about 24 ms).
+ * The ATF1502AS clears every register at power-up, and S1 (to GND, R8 pull-up) clears them asynchronously for as long as it is held,
+ * so contact bounce only restarts the count. No clock, no end of reset: the 65C02 is never let go
+ * before X1 runs.
+ *
+ * /RESET and RDY are open drain on the board (R7, R1 pull-ups): the CPLD only ever pulls them low,
+ * so an expansion card may still pull /RESET too.
+ * JTAG stays on, so the chip is programmed in circuit through J8 and never leaves its socket.
+ */
+
+PROPERTY ATMEL {JTAG = ON};
+PROPERTY ATMEL {TDI_PULLUP = ON};
+PROPERTY ATMEL {TMS_PULLUP = ON};
+PROPERTY ATMEL {PREASSIGN = KEEP};
+
+/* ---- dedicated input pins (these four cannot be outputs) ---- */
+PIN 43 = PHI2;                      /* GCLK1, CPU clock (X1) */
+PIN 1  = RSTBTN_N;                  /* GCLR, reset button S1 to GND, R8 pull-up */
+PIN 2  = RW;                        /* R/W# of the 65C02 */
+PIN 44 = DUADTACK_N;                /* /DTACK of the DUART */
+
+/* ---- chip selects and strobes: block A (MC1-16), top and left sides ---- */
+PIN 4  = RESET_N;                   /* open drain */
+PIN 5  = RDY;                       /* open drain: wait states for the DUART */
+PIN 6  = DUASEL_N;                  /* /CS of IC3 */
+PIN 8  = LOWRAM_N;                  /* /CE of U2, 32 KiB SRAM (16 KiB used) */
+PIN 9  = BANKRAM_N;                 /* /CE of U1, 512 KiB SRAM */
+PIN 11 = ROMOE_N;                   /* /OE of U3; its /CE is tied low */
+PIN 12 = RD_N;                      /* /OE of U1 and U2 */
+PIN 14 = WR_N;                      /* /WE of U1 and U2 */
+PIN 16 = BANKCLK;                   /* CLK of U4, the bank register */
+
+/* ---- CPU address: bottom and right sides, mostly block B (MC17-32) ---- */
+PIN [17,18,19,20,21,24,25,26,27,28,29,31,33,34,36] = [A1..15];
+
+/* Spare I/O: 37, 39, 40, 41. JTAG: TDI 7, TMS 13, TCK 32, TDO 38.
+ *
+ * The split between the blocks is what makes it fit. Each block takes at most 40 signals from
+ * the global bus, and the decoder alone needs A1..A15, R/W, PHI2 and /DUADTACK. With the outputs
+ * and the counter's upper bits in one block, the fitter ran out of input routing ("Fail to route
+ * variable A3 in Block 2"). With the outputs in block A, the upper counter bits land in block B,
+ * where all they need is the counter itself. */
+
+/* ---- buried nodes ---- */
+PINNODE = [RC0..18];                /* reset counter */
+
+/* ---- address decoder (was IC2) ---------------------------------------------------------- */
+
+IO      = A15 & A14 & !A13;                                      /* $C000-$DFFF */
+ROM     = A15 & A14 & A13;                                       /* $E000-$FFFF */
+BANKSEL = !A15 & !A14 & !A13 & !A12 & !A11 & !A10 & !A9 & !A8
+        & !A7 & !A6 & !A5 & !A4 & !A3 & !A2 & !A1;               /* $0000-$0001 */
+DUASEL  = IO & !A12 & !A11 & !A10 & !A9 & !A8 & !A7 & !A6 & !A5 & !A4;   /* $C000-$C00F */
+
+LOWRAM_N  = !(!A15 & !A14);                                      /* $0000-$3FFF */
+BANKRAM_N = !(!A15 & A14 # A15 & !A14);                          /* $4000-$BFFF */
+DUASEL_N  = !DUASEL;
+
+/* ---- glue (was IC5) --------------------------------------------------------------------- */
+
+RD_N    = !(RW & PHI2);
+WR_N    = !(!RW & PHI2);
+ROMOE_N = !(ROM & RW);
+BANKCLK = BANKSEL & !RW & !PHI2;
+
+RDY    = 'b'0;
+RDY.oe = DUASEL & DUADTACK_N;                                   /* hold the CPU until /DTACK */
+
+/* ---- reset generator (was IC4, the 555) ------------------------------------------------- */
+
+RUN = !RC18;                        /* still counting */
+
+RC0.d  = RC0  $ RUN;
+RC1.d  = RC1  $ (RUN & RC0);
+RC2.d  = RC2  $ (RUN & RC0 & RC1);
+RC3.d  = RC3  $ (RUN & RC0 & RC1 & RC2);
+RC4.d  = RC4  $ (RUN & RC0 & RC1 & RC2 & RC3);
+RC5.d  = RC5  $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4);
+RC6.d  = RC6  $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5);
+RC7.d  = RC7  $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6);
+RC8.d  = RC8  $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7);
+RC9.d  = RC9  $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8);
+RC10.d = RC10 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9);
+RC11.d = RC11 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10);
+RC12.d = RC12 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11);
+RC13.d = RC13 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12);
+RC14.d = RC14 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12 & RC13);
+RC15.d = RC15 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12 & RC13 & RC14);
+RC16.d = RC16 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12 & RC13 & RC14 & RC15);
+RC17.d = RC17 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12 & RC13 & RC14 & RC15 & RC16);
+RC18.d = RC18 $ (RUN & RC0 & RC1 & RC2 & RC3 & RC4 & RC5 & RC6 & RC7 & RC8 & RC9 & RC10 & RC11
+                     & RC12 & RC13 & RC14 & RC15 & RC16 & RC17);
+
+[RC0..18].ck = PHI2;
+[RC0..18].ar = !RSTBTN_N;
+
+RESET_N    = 'b'0;
+RESET_N.oe = RUN;

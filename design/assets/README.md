@@ -1,6 +1,6 @@
 # Board preview assets
 
-The main README uses `rosco_6502-board-3d.png`, an orthographic view rendered with OpenGL rasterization. It uses smooth surface normals, linear-light shading and soft rasterized highlights, with no ray tracing or shadow passes. The earlier bare-board top view is retained as `rosco_6502-board.png`.
+The main README uses `solderdemon_6502-board-3d.png`, an orthographic view rendered with OpenGL rasterization. It uses smooth surface normals, linear-light shading and soft rasterized highlights, with no ray tracing or shadow passes. `solderdemon_6502-top.png` and `solderdemon_6502-bottom.png` are `kicad-cli pcb render --side top|bottom -w 1600 -h 1600` views. `solderdemon-logo.png` is the source of the SolderDemon logo footprint (`tools/make_logo.py`).
 
 ## 3D models
 
@@ -15,8 +15,8 @@ The render preserves the board thickness and component placements in the PCB fil
 Use KiCad 10 with its standard 3D library, Python, `numpy`, `trimesh`, `moderngl` and `Pillow`, and an OpenGL 3.3 capable graphics driver. Run from the repository root, with `kicad-cli` on PATH:
 
 ```sh
-kicad-cli pcb export glb --output rosco-populated.glb --force --include-pads --include-silkscreen --include-soldermask design/kicad/rosco_6502.kicad_pcb
-python design/assets/render_board.py rosco-populated.glb design/assets/rosco_6502-board-3d.png
+kicad-cli pcb export glb --output rosco-populated.glb --force --include-pads --include-silkscreen --include-soldermask design/kicad/solderdemon_6502.kicad_pcb
+python design/assets/render_board.py rosco-populated.glb design/assets/solderdemon_6502-board-3d.png
 ```
 
 The GLB is an intermediate file and does not need to be committed. The renderer adds the local UART visualization at the current IC3 position; update that placement in the script if IC3 is moved. It uses an orthographic camera and renders at twice the output resolution before downsampling to 1800 × 1400 pixels.

@@ -1,6 +1,14 @@
 # rosco_6502 PLDs
 
-[Building and programming PLDs](../../docs/pld-firmware.md) provides the full instructions for IC2 and IC5.
+[Building and programming PLDs](../../docs/pld-firmware.md) provides the full instructions.
+
+r5 replaces both GALs and the 555 reset timer with one ATF1502AS, programmed in the board over JTAG (J8):
+
+| Position | Source | JEDEC | Build |
+| --- | --- | --- | --- |
+| IC2 (r5) | [ic2_glue.pld](cpld/ic2_glue.pld) | [ic2_glue.jed](cpld/ic2_glue.jed) | [build.sh](cpld/build.sh), fitter report [ic2_glue.fit](cpld/ic2_glue.fit) |
+
+r4 GALs:
 
 | Position | Source | JEDEC | Programming script |
 | --- | --- | --- | --- |

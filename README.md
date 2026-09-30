@@ -1,22 +1,26 @@
-# Really Old-School Computer - 6502
+# SolderDemon 6502
 
-[![rosco_6502 r4 populated PCB in an orthographic 3D view](design/assets/rosco_6502-board-3d.png)](design/kicad/rosco_6502.kicad_pcb)
+[![SolderDemon 6502 r1 populated PCB in an orthographic 3D view](design/assets/solderdemon_6502-board-3d.png)](design/kicad/solderdemon_6502.kicad_pcb)
+
+Revision r1 — the first SolderDemon revision of this board.
 
 ## A 65C02 Single-Board Computer
 
-This repository holds design files, firmware and software for the Really Old-School Computer
-(6502) single-board computer, AKA the rosco_6502. This is a fully-featured, programmable,
-extensible and capable 8-bit retro computer that is completely open source.
+SolderDemon 6502 is a programmable, extensible 8-bit retro computer built around the WDC 65C02,
+and the mainboard of SolderDemon's 6502 line. This repository holds its design files, firmware
+and software.
 
-The rosco_6502 is the "little brother" of the popular [rosco_m68k](https://github.com/rosco-m68k)
-m68k computer. It is made by the same people, and shares the ethos of being powerful, extensible
-and above all, fun.
-
-This project contains all the design files and source code for the project.
+It is based on [rosco_6502](https://github.com/rosco-m68k/rosco_6502) (CERN OHL). r1 is rosco_6502 r4
+with its glue logic moved into one ATF1502AS CPLD; it was developed here as "r5", and the
+[revision notes](docs/revision-5.md) still use that name.
 
 * All Software released under the MIT licence. See LICENSE for details.
 * All Hardware released under the CERN Open Hardware licence. See LICENCE.hardware.txt.
 * All Documentation released under Creative Commons Attribution. See <https://creativecommons.org/licenses/by/2.0/uk/>
+
+| Top Side | Bottom Side |
+|:---:|:---:|
+| ![Top View](design/assets/solderdemon_6502-top.png) | ![Bottom View](design/assets/solderdemon_6502-bottom.png) |
 
 ## Documentation
 
@@ -29,12 +33,13 @@ Start with the [documentation index](docs/README.md).
 * [Developing and loading programs](docs/software.md)
 * [Troubleshooting](docs/troubleshooting.md)
 * [Revision 4 notes](docs/revision-4.md)
+* [SolderDemon 6502 r1 notes](docs/revision-5.md) (developed as r5)
 
 ## Specifications
 
 ### Hardware
 
-The hardware specifications for the rosco_6502 are:
+The hardware specifications for the SolderDemon 6502 are:
 
 * WDC 65C02 at up-to 14MHz (In theory, 10MHz testing target currently).
 * SCN68681C1A44 provides two UARTs, timers and SD Card / SPI / GPIO; the console runs at 38400 bit/s
@@ -43,7 +48,7 @@ The hardware specifications for the rosco_6502 are:
   * 16 x 32KB RAM banks ($4000 - $BFFF)
 * 8KB IO space ($C000 - $DFFF)
 * 8KB or 32KB (banked) ROM $E000 - $FFFF
-* High-speed decode and glue logic handled by Atmel F22V10C PLDs.
+* High-speed decode and glue logic handled by Atmel F22V10C PLDs (r4), or by a single ATF1502AS CPLD programmed in the board over JTAG (SolderDemon r1, see [r1 notes](docs/revision-5.md)).
 * Comprehensive expansion and IO connectors allow the system to be easily expanded!
 
 You can see the electrical designs in [kicad](design/kicad). Programmable logic lives in [pld](code/pld).
@@ -71,8 +76,17 @@ See [Developing and loading programs](docs/software.md#rosco-cli-and-emulator) f
 
 ## Repository layout
 
-* [design/kicad](design/kicad): board schematics and PCB layouts.
+* [design/kicad](design/kicad): board schematic and PCB layout (`solderdemon_6502` KiCad project).
+* [design/CAMOutputs](design/CAMOutputs): Gerber and drill files for r1.
 * [code/pld](code/pld): programmable logic sources.
+* [tools](tools): scripts that derive the r1 schematic and board from rosco_6502 r4, add the SolderDemon identity and check the CPLD.
 * [code/firmware](code/firmware): ca65 firmware and ROM linker configurations.
 * [code/software](code/software): example programs, tests and filesystem utilities.
 * [docs](docs): additional project documentation.
+
+## License
+
+* **Hardware:** CERN Open Hardware Licence v1.2 ([LICENCE.hardware.txt](LICENCE.hardware.txt)).
+* **Copyright © 2026 SolderDemon.**
+* Modified from rosco_6502 r4 (© 2022-2023 Ross Bamford & Contributors); the licences require
+  that notice to stay in the design files and in [LICENSE](LICENSE).

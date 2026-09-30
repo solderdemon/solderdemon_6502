@@ -1,6 +1,6 @@
-# rosco_6502 Documentation
+# SolderDemon 6502 Documentation
 
-rosco_6502 is an open single-board computer built around the WDC 65C02, with banked memory, two UARTs and SD access over SPI. This guide covers the r4 board and the current ca65 firmware in this repository.
+SolderDemon 6502 is an open single-board computer built around the WDC 65C02, with banked memory, two UARTs and SD access over SPI. It is based on rosco_6502. This guide covers the rosco_6502 r4 board, the SolderDemon 6502 r1 design (developed as r5, not built yet; "r5" below means r1) and the current ca65 firmware in this repository.
 
 ## Where to start
 
@@ -9,21 +9,23 @@ rosco_6502 is an open single-board computer built around the WDC 65C02, with ban
 | Power up the board and connect a terminal | [Getting started](getting-started.md) |
 | Check power connections, ROM options and memory layout | [Hardware](hardware.md) |
 | Build and program the EEPROM | [ROM firmware](rom-firmware.md) |
-| Build JEDEC files and program IC2 and IC5 | [PLD firmware](pld-firmware.md) |
+| Build JEDEC files and program IC2 and IC5 (r4) or the IC2 CPLD over JTAG (r5) | [PLD firmware](pld-firmware.md) |
 | Build a program and load it over UART or from SD | [Software development](software.md) |
 | Build and run a program with the rosco CLI, with or without the board | [rosco CLI and emulator](software.md#rosco-cli-and-emulator) |
 | Diagnose a failure | [Troubleshooting](troubleshooting.md) |
 | Read the manufacturer's r4 notices | [Revision 4 notes](revision-4.md) |
+| See what r5 changes: one ATF1502AS CPLD, JTAG, reset button on the edge | [Revision 5 notes](revision-5.md) |
 
-For a new board, follow this sequence: inspect assembly and power connections → program both PLDs → program ROM → start with a terminal → load a RAM program.
+For a new board, follow this sequence: inspect assembly and power connections → program both PLDs (r4), or program IC2 over JTAG with only IC2 fitted (r5) → program ROM → start with a terminal → load a RAM program.
 
 ## Repository layout
 
 | Directory | Contents |
 | --- | --- |
 | [design/kicad](../design/kicad) | Schematic, PCB, symbol and footprint libraries, component CSV |
-| [design/CAMOutputs](../design/CAMOutputs) | Gerber and drill files |
-| [code/pld](../code/pld) | Logic equations, JEDEC files and programming scripts |
+| [design/CAMOutputs](../design/CAMOutputs) | Gerber and drill files (r1) |
+| [code/pld](../code/pld) | Logic equations, JEDEC files and programming scripts (r4 GALs, r5 CPLD) |
+| [tools](../tools) | r5 generators and checks: schematic, board, routing, CPLD equivalence |
 | [code/firmware](../code/firmware) | Main ca65 firmware |
 | [code/software](../code/software) | Examples and filesystem utilities |
 
