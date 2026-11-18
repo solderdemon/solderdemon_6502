@@ -64,6 +64,7 @@ ROW_Y = 141.0                                             # bottom row: indicato
 RES_X, RES_PITCH = 121.545, 3.2
 EDGE_X = 181.25                                           # the header column on the right edge
 LABEL_X = 177.9
+UART_ROTATION = 180                                      # pin 1 (GND) at the bottom, as on m68k
 REVISION_AT = (88.505, 126.0)                               # copper revision mark, under C16
 
 # loose texts that follow a part (the texts' r1 positions are near its r1 centre)
@@ -113,9 +114,9 @@ PLACE = {
     'C18':  ((163.15, ROW_Y), 0),
     'C17':  ((171.25, ROW_Y), 0),
     # right edge, top to bottom: UART B, UART A, SD/SPI with each UART's supply jumper under it, power
-    'J2':  ((EDGE_X, 67.235), 0),
+    'J2':  ((EDGE_X, 67.235), UART_ROTATION),
     'JP2': ((EDGE_X - 1.25, 77.9), 90),
-    'J1':  ((EDGE_X, 88.55), 0),
+    'J1':  ((EDGE_X, 88.55), UART_ROTATION),
     'JP1': ((EDGE_X - 1.25, 99.2), 90),
     'J3':  ((EDGE_X, 109.85), 180),
     'J7':  ((175.0, 125.5), 180),
