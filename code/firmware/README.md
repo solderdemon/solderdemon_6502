@@ -1,4 +1,4 @@
-# ca65 ROM firmware for rosco_6502
+# ca65 ROM firmware for SolderDemon 6502
 
 This directory contains the ca65-based ROM firmware. It initializes the
 hardware and includes WozMon, SD card access, read-only FAT32 support and
@@ -57,5 +57,5 @@ also use `srec_cat` to generate Intel HEX files.
 
 ## Further documentation
 
-[Complete ROM build and programming guide](../../../docs/rom-firmware.md).
-[Documentation index](../../../docs/README.md).
+[Complete ROM build and programming guide](../../docs/rom-firmware.md).
+[Documentation index](../../docs/README.md).

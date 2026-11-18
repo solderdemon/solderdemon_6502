@@ -4,7 +4,7 @@
 
 ## What you need
 
-Prepare an assembled board of the appropriate revision, programmed IC2 and IC5 devices, an EEPROM containing the matching ROM image, a 5 V DC supply and a UART adapter with logic levels compatible with the board schematic. Check connector pin assignments and orientation against the [schematic](../design/kicad/solderdemon_6502.pdf) and your board markings.
+Prepare an assembled board of the appropriate revision, programmed IC2 and IC5 devices, an EEPROM containing the matching ROM image, a 5 V DC supply and a UART adapter with logic levels compatible with the board schematic. Check connector pin assignments and orientation against the [schematic](../manufacturing/solderdemon_6502-schematic.pdf) and your board markings.
 
 For an unprogrammed board, complete [PLD programming](pld-firmware.md), then [ROM programming](rom-firmware.md). Insert and remove ICs only with board power disconnected.
 

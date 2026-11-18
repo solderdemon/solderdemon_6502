@@ -1,4 +1,4 @@
-"""Generate the SolderDemon logo footprint from design/assets/solderdemon-logo.png, as on the busboard.
+"""Generate the SolderDemon logo footprint from images/solderdemon-logo.png, as on the busboard.
 
 The logo is pixel art on a transparent background. The image is cropped to
 its opaque pixels, sampled on a grid of CELL source pixels, and every run of
@@ -13,8 +13,8 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-LOGO = ROOT / 'design' / 'assets' / 'solderdemon-logo.png'
-LIB = ROOT / 'design' / 'kicad' / 'rosco_6502.pretty'
+LOGO = ROOT / 'images' / 'solderdemon-logo.png'
+LIB = ROOT / 'design' / 'solderdemon_6502.pretty'
 CELL = 4                      # source pixels per silkscreen cell
 NS = uuid.UUID('5d0e7a1c-0000-4000-8000-50d3e7de0000')
 

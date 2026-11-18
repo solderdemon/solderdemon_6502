@@ -8,7 +8,7 @@
 # Copyright (c)2022-2024 Ross Bamford and contributors
 # See top-level LICENSE.md for licence information.
 #
-# Makefile - rosco_6502 firmware Makefile
+# Makefile - SolderDemon 6502 firmware Makefile
 #------------------------------------------------------------
 
 # Makefile "best practices" from https://tech.davis-hansson.com/p/make/ (but not forcing gmake)

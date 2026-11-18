@@ -1,4 +1,4 @@
-"""Prove that the r5 ATF1502AS (code/pld/cpld/ic2_glue.pld) does what the three r4 chips did.
+"""Prove that the r5 ATF1502AS (code/firmware/pld/cpld/ic2_glue.pld) does what the three r4 chips did.
 
 Decoder and glue: the reference is not the r4 equations but the r4 JEDEC fuse maps, run by gal.py:
 IC2 decodes the address, its /IO, /ROM, /DUASEL and BANKSEL feed IC5, as on the r4 board. The CPLD
@@ -17,7 +17,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PLD = os.path.join(HERE, '..', 'code', 'pld')
+PLD = os.path.join(HERE, '..', 'code', 'firmware', 'pld')
 sys.path.insert(0, HERE)
 import cupl  # noqa: E402
 import gal   # noqa: E402

@@ -32,7 +32,7 @@ SREC_CAT := srec_cat
 AS_FLAGS := -D__ROSCO__=1 --cpu 65SC02 --feature string_escapes --list-bytes 0 -I $(ROSCO_6502_INC)
 LD_FLAGS := -v -C rosco_6502_1bank.cfg
 
-# normal rosco_6502 RAM start address
+# normal SolderDemon 6502 RAM start address
 START_ADDR	:=	0x0800
 
 TARGET := msg_test

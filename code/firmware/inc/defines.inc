@@ -9,7 +9,7 @@
 ; Copyright (c)2022-2024 Ross Bamford, Xark and contributors
 ; See top-level LICENSE.md for licence information.
 ;
-; rosco_6502 hardware and firmware BIOS defines
+; SolderDemon 6502 hardware and firmware BIOS defines
 ;------------------------------------------------------------
 ;
 ; NOTE: Made for most 6502 assemblers (mostly "=", ca65 and vasm tested)
@@ -17,7 +17,7 @@
 DEFINES_INC             =       1
 
 ;
-; rosco_6502 r4 Memory Map:
+; SolderDemon 6502 memory map (unchanged from rosco_6502 r4):
 ;
 ; |Memory Range | Bytes | Usage
 ; +-------------+-------+------------------------------------------------
@@ -66,10 +66,10 @@ BANK_ROM_B              =       4                       ; shift for ROM bank bit
 BANK_ROM_M              =       $30                     ; mask for ROM bank bits in BANK_SET
 
 ; *******************************************************
-; * rosco_6502 I/O addresses
+; * SolderDemon 6502 I/O addresses
 ; *******************************************************
 
-; rosco_6502 65C02S ROM and RAM bank registers (read from underlying RAM)
+; SolderDemon 6502 65C02S ROM and RAM bank registers (read from underlying RAM)
 BANK_SET                =       $00                     ; R/W [5:4] ROM bank, [3:0] RAM bank
 BANK_RSVD               =       $01                     ; -/- reserved future banking register
 

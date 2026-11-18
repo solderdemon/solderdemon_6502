@@ -57,9 +57,9 @@ The introductory table in `defines.inc` disagrees with the constants about zero 
 
 ## Board design files
 
-- [KiCad schematic](../design/kicad/solderdemon_6502.kicad_sch), [PDF schematic](../design/kicad/solderdemon_6502.pdf). The KiCad files are SolderDemon 6502 r1 (developed as r5); the rosco_6502 r4 files are in git history (commit `febedf81d62ee84a51998f37c9de908616646e20`).
-- [PCB](../design/kicad/solderdemon_6502.kicad_pcb), [KiCad project](../design/kicad/solderdemon_6502.kicad_pro).
-- [Component CSV](../design/kicad/solderdemon_6502.csv), [manufacturing files](../design/CAMOutputs).
+- [KiCad schematic](../design/solderdemon_6502.kicad_sch), [PDF schematic](../manufacturing/solderdemon_6502-schematic.pdf). The KiCad files are SolderDemon 6502 r1 (developed as r5); the rosco_6502 r4 files are in git history (commit `febedf81d62ee84a51998f37c9de908616646e20`).
+- [PCB](../design/solderdemon_6502.kicad_pcb), [KiCad project](../design/solderdemon_6502.kicad_pro).
+- [Component CSV](../design/solderdemon_6502.csv), [manufacturing files](../manufacturing/gerbers).
 - [Firmware constants](../code/firmware/inc/defines.inc), [ROM linker configuration](../code/firmware/rosco_6502_32K.cfg).
 
-The Gerbers and drill files in `design/CAMOutputs` are exported from the r1 board (see [r1 notes](revision-5.md)); the r4 Gerbers are in git history. The r4 GAL source headers say r1: that is an upstream rosco_6502 revision number, not SolderDemon r1.
+The Gerbers and drill files in `manufacturing/gerbers` are exported from the r1 board (see [r1 notes](revision-5.md)); the r4 Gerbers are in git history. The r4 GAL source headers say r1: that is an upstream rosco_6502 revision number, not SolderDemon r1.

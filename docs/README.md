@@ -15,6 +15,7 @@ SolderDemon 6502 is an open single-board computer built around the WDC 65C02, wi
 | Diagnose a failure | [Troubleshooting](troubleshooting.md) |
 | Read the manufacturer's r4 notices | [Revision 4 notes](revision-4.md) |
 | See what r5 changes: one ATF1502AS CPLD, JTAG, reset button on the edge | [Revision 5 notes](revision-5.md) |
+| See the r1 placement and rebuild steps | [r1 layout](layout-r1.md) |
 
 For a new board, follow this sequence: inspect assembly and power connections → program both PLDs (r4), or program IC2 over JTAG with only IC2 fitted (r5) → program ROM → start with a terminal → load a RAM program.
 
@@ -22,10 +23,10 @@ For a new board, follow this sequence: inspect assembly and power connections �
 
 | Directory | Contents |
 | --- | --- |
-| [design/kicad](../design/kicad) | Schematic, PCB, symbol and footprint libraries, component CSV |
-| [design/CAMOutputs](../design/CAMOutputs) | Gerber and drill files (r1) |
-| [code/pld](../code/pld) | Logic equations, JEDEC files and programming scripts (r4 GALs, r5 CPLD) |
-| [tools](../tools) | r5 generators and checks: schematic, board, routing, CPLD equivalence |
+| [design](../design) | Schematic, PCB, symbol and footprint libraries, component CSV |
+| [manufacturing/gerbers](../manufacturing/gerbers) | Gerber and drill files |
+| [code/firmware/pld](../code/firmware/pld) | Logic equations, JEDEC files and programming scripts (r4 GALs, r5 CPLD) |
+| [tools](../tools) | Generators and checks: schematic, board, r1 placement, routing, CPLD equivalence |
 | [code/firmware](../code/firmware) | Main ca65 firmware |
 | [code/software](../code/software) | Examples and filesystem utilities |
 
@@ -35,7 +36,7 @@ The firmware is under development. FAT32 support is read-only; an API symbol doe
 
 Commands follow the Makefiles and scripts in this repository. Run `sh` blocks in Bash. On Windows, use an environment providing Bash, GNU Make and the required tools on PATH. Validate builds and physical programming in your own environment.
 
-The former `r4 Information.docx` and `r4 Information.pdf` are replaced by [Revision 4 notes](revision-4.md), with technical details also included in the relevant guides. The schematic PDF in `design/kicad` remains a drawing.
+The former `r4 Information.docx` and `r4 Information.pdf` are replaced by [Revision 4 notes](revision-4.md), with technical details also included in the relevant guides. The schematic PDF in `design` remains a drawing.
 
 ## Licences
 

@@ -1,8 +1,8 @@
 # SolderDemon 6502
 
-[![SolderDemon 6502 r1 populated PCB in an orthographic 3D view](design/assets/solderdemon_6502-board-3d.png)](design/kicad/solderdemon_6502.kicad_pcb)
+[![Assembled SolderDemon 6502 r1 board](images/solderdemon_6502-photo.jpg)](design/solderdemon_6502.kicad_pcb)
 
-Revision r1 — the first SolderDemon revision of this board.
+Revision r1 — a 100 × 100 mm board. J5 stands beside the CPU; CPU, bank RAM, low RAM and ROM run side by side under the top edge, the CPLD and DUART sockets sit on one line below them with the SolderDemon logo and JTAG between, and the indicators, RESET and all resistors form the bottom row. Their references are on the component side. The UART and SD/SPI connectors are straight pin headers along the right edge. J5 is a right-angle socket on the left edge, so the host stands upright in the busboard's HOST slot; the standalone CS2 pin header is removed ([layout and mounting notes](docs/layout-r1.md)).
 
 ## A 65C02 Single-Board Computer
 
@@ -14,13 +14,17 @@ It is based on [rosco_6502](https://github.com/rosco-m68k/rosco_6502) (CERN OHL)
 with its glue logic moved into one ATF1502AS CPLD; it was developed here as "r5", and the
 [revision notes](docs/revision-5.md) still use that name.
 
-* All Software released under the MIT licence. See LICENSE for details.
-* All Hardware released under the CERN Open Hardware licence. See LICENCE.hardware.txt.
-* All Documentation released under Creative Commons Attribution. See <https://creativecommons.org/licenses/by/2.0/uk/>
 
 | Top Side | Bottom Side |
 |:---:|:---:|
-| ![Top View](design/assets/solderdemon_6502-top.png) | ![Bottom View](design/assets/solderdemon_6502-bottom.png) |
+| ![Top View](images/solderdemon_6502-top.png) | ![Bottom View](images/solderdemon_6502-bottom.png) |
+
+## Start here
+
+- [KiCad project](design/solderdemon_6502.kicad_pro)
+- [Schematic (PDF)](manufacturing/solderdemon_6502-schematic.pdf)
+- [Gerbers and drill files](manufacturing/solderdemon_6502-r1-gerbers.zip)
+- [Getting started](docs/getting-started.md)
 
 ## Documentation
 
@@ -34,6 +38,7 @@ Start with the [documentation index](docs/README.md).
 * [Troubleshooting](docs/troubleshooting.md)
 * [Revision 4 notes](docs/revision-4.md)
 * [SolderDemon 6502 r1 notes](docs/revision-5.md) (developed as r5)
+* [SolderDemon 6502 r1 layout](docs/layout-r1.md)
 
 ## Specifications
 
@@ -51,7 +56,7 @@ The hardware specifications for the SolderDemon 6502 are:
 * High-speed decode and glue logic handled by Atmel F22V10C PLDs (r4), or by a single ATF1502AS CPLD programmed in the board over JTAG (SolderDemon r1, see [r1 notes](docs/revision-5.md)).
 * Comprehensive expansion and IO connectors allow the system to be easily expanded!
 
-You can see the electrical designs in [kicad](design/kicad). Programmable logic lives in [pld](code/pld).
+You can see the electrical designs in [kicad](design). Programmable logic lives in [pld](code/firmware/pld).
 
 ### Software
 
@@ -74,19 +79,34 @@ instructions.
 
 See [Developing and loading programs](docs/software.md#rosco-cli-and-emulator) for usage.
 
+## Licences and attribution
+
+- **Hardware:** [CERN Open Hardware Licence v1.2](LICENCE.hardware.txt).
+- **Software:** [MIT](LICENSE).
+- **Documentation:** [Creative Commons Attribution 2.0 UK](https://creativecommons.org/licenses/by/2.0/uk/).
+
+Based on [rosco_6502](https://github.com/rosco-m68k/rosco_6502) r4, © 2022–2023 Ross Bamford & Contributors. SolderDemon changes include the CPLD glue logic, r1 board layout and build documentation. Copyright © 2026 SolderDemon. Original authorship and licence notices are retained.
+
+<!-- repository-layout -->
 ## Repository layout
 
-* [design/kicad](design/kicad): board schematic and PCB layout (`solderdemon_6502` KiCad project).
-* [design/CAMOutputs](design/CAMOutputs): Gerber and drill files for r1.
-* [code/pld](code/pld): programmable logic sources.
-* [tools](tools): scripts that derive the r1 schematic and board from rosco_6502 r4, add the SolderDemon identity and check the CPLD.
-* [code/firmware](code/firmware): ca65 firmware and ROM linker configurations.
-* [code/software](code/software): example programs, tests and filesystem utilities.
-* [docs](docs): additional project documentation.
+- [`design/`](design/solderdemon_6502.kicad_pro) holds the KiCad project, schematic, PCB and local libraries.
+- [`code/firmware/`](code/firmware/) — ROM and programmable-logic sources and programming files.
+- [`code/software/`](code/software/) — Example programs and filesystem utilities.
+- [`code/build/`](code/build/) — Local build products.
+- [`tools/`](tools/) — Design generators and verification.
+- [`manufacturing/`](manufacturing/) — Fabrication files and schematic PDF.
+- [`images/`](images/) — Board views and artwork.
 
-## License
+Open the project in `design/`. Use the scripts in `tools/` to change the design. The `.kicad_pro` file holds the DRC rules.
+The r1 placement scripts are in `tools/`. To rebuild the reviewed 5.08 mm capacitor
+placement from `design/placement_before_5mm_caps.kicad_pcb.gz`, run
+`tools/upgrade_100nf.py`, then `tools/route_r5.py` to redraw the signal tracks.
+<!-- /repository-layout -->
 
-* **Hardware:** CERN Open Hardware Licence v1.2 ([LICENCE.hardware.txt](LICENCE.hardware.txt)).
-* **Copyright © 2026 SolderDemon.**
-* Modified from rosco_6502 r4 (© 2022-2023 Ross Bamford & Contributors); the licences require
-  that notice to stay in the design files and in [LICENSE](LICENSE).
+## Design history
+
+The r4 import and the initial CPLD design are retained as generator inputs. See the upstream rosco_6502 repository for the original development history.
+
+The USB-Blaster patch applies to the OpenOCD 0.12.0 driver under the GNU GPL.
+See [the GPL text](licenses/GPL-2.0.txt) and [OpenOCD](https://github.com/openocd-org/openocd/tree/v0.12.0).

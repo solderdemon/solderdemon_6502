@@ -465,7 +465,7 @@ SHWMSG1:                LDA     (L),Y
 
 ;-------------------------------------------------------------------------
 FLAGNAMES:              .byte   "CZIDB1VN"
-MONMSG:                 .byte   $0D, "rosco_6502 EWozMon", $0D, 0
+MONMSG:                 .byte   $0D, "SolderDemon 6502 EWozMon", $0D, 0
 BRKMSG:                 .byte   $0D, $0D, $07, "BRK @", 0
 TRBEGMSG:               .byte   $0D, "Start Intel hex file load:", $0D, 0
 TRDONEMSG:              .byte   $0D, "Load ", 0

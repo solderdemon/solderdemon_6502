@@ -23,3 +23,23 @@
 
 # routing work files (tools/route_r5.py)
 .routing/
+
+# Local build products
+/code/build/*
+!/code/build/README.md
+
+# Python caches
+__pycache__/
+
+# Fabrication packages
+!/manufacturing/*.zip
+
+# KiCad local settings and history
+*.kicad_prl
+.history/
+
+# Local KiCad and fabrication work products
+*.kicad_prl
+.history/
+*-backups/
+fabrication-toolkit-options.json

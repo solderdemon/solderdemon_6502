@@ -12,7 +12,7 @@
 ; Filesystem menu and shell
 ;------------------------------------------------------------
 
-                ; rosco_6502 firmware definitions
+                ; SolderDemon 6502 firmware definitions
                 .include "defines.inc"
 
                 .list   off

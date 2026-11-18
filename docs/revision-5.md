@@ -6,6 +6,9 @@ r5 is released as **SolderDemon 6502 r1**, the first SolderDemon revision: the s
 the KiCad project renamed to `solderdemon_6502` and the SolderDemon identity on the board (see
 [Identity](#identity)). The notes below keep the name r5 for the design work.
 
+These are historical design notes. The current r1 [layout](layout-r1.md) moves the parts and
+removes the standalone J4/CS2 pin header.
+
 r5 is r4 with its glue logic moved into one ATF1502AS-10JU44 CPLD. The CPU, memory map, memories,
 DUART, bank register, connectors and firmware are unchanged. The r5 design files have been checked
 by simulation and design rules only: **no r5 board has been built yet**.
@@ -28,8 +31,8 @@ two GALs, now decouple IC2.
 
 ## IC2: ATF1502AS
 
-Source: [code/pld/cpld/ic2_glue.pld](../code/pld/cpld/ic2_glue.pld) (CUPL). The fitter report
-[ic2_glue.fit](../code/pld/cpld/ic2_glue.fit) lists the final pinout; the design uses 29 of 32
+Source: [code/firmware/pld/cpld/ic2_glue.pld](../code/firmware/pld/cpld/ic2_glue.pld) (CUPL). The fitter report
+[ic2_glue.fit](../code/firmware/pld/cpld/ic2_glue.fit) lists the final pinout; the design uses 29 of 32
 macrocells and 28 of 32 I/O pins, with JTAG left enabled.
 
 | Function | Pins |
@@ -78,7 +81,7 @@ timing on every path.
 | --- | --- |
 | [tools/check_cpld.py](../tools/check_cpld.py): r5 CUPL equations against the r4 JEDEC fuse maps (two GALs chained as on the board) | 262 144 input combinations, 0 differences |
 | Same script: reset counter from power-up, then S1 with bounce | 262 144 clocks both times; bounce holds reset |
-| WinCUPL + Atmel fitter ([build.sh](../code/pld/cpld/build.sh)) | Fits, pinout as assigned, JTAG on |
+| WinCUPL + Atmel fitter ([build.sh](../code/firmware/pld/cpld/build.sh)) | Fits, pinout as assigned, JTAG on |
 | KiCad ERC | 0 errors; the warnings are the ones r4 already had |
 | KiCad DRC with schematic parity | See [the board section](#board) |
 
@@ -112,7 +115,7 @@ revision mark, so the routing stays valid:
   "SolderDemon 6502" stands in the logotype's place;
 - the SolderDemon pixel-art logo is on the back, between the 65C02's rows of pins (the only place
   with 12 mm to spare), with "SolderDemon" and "solderdemon_6502 r1" under it. The footprint is
-  `rosco_6502:SolderDemon_Logo`, made from `design/assets/solderdemon-logo.png` by
+  `solderdemon_6502:SolderDemon_Logo`, made from `images/solderdemon-logo.png` by
   `tools/make_logo.py` (the busboard's generator, 12.8 mm high);
 - the copper mark in the top left corner reads r1 and the back carries "(c)2026 SolderDemon";
 - the schematic and board title blocks read "Copyright (c)2026 SolderDemon", with one line
@@ -120,7 +123,9 @@ revision mark, so the routing stays valid:
   v1.2 (3.1, 3.4b) asks for the original notice and a modification notice in the design files,
   not on the board.
 
-The KiCad symbol and footprint library keeps its `rosco_6502` name.
+The KiCad symbol and footprint library is `solderdemon_6502` (`design/solderdemon_6502.kicad_sym`,
+`solderdemon_6502.pretty`). The r4 base files still call it `rosco_6502`; `tools/rename_lib.py`, run at
+the end of `make_r1_pcb.py`, renames it.
 
 `route_r5.py` uses the workspace's shared router (`../tools/route_swarm.py`) and needs Java 25 and
 Freerouting 2.4.1 in `../tools`.
@@ -137,7 +142,7 @@ J8 follows the 10-pin Altera ByteBlaster layout that Microchip's (Atmel's) ATDH1
 | 7 | — | 8 | — |
 | 9 | TDI | 10 | GND |
 
-Program `code/pld/cpld/ic2_glue.jed`, for example with an ATDH1150USB and Microchip's ATMISP.
+Program `code/firmware/pld/cpld/ic2_glue.jed`, for example with an ATDH1150USB and Microchip's ATMISP.
 ATMISP can also write an SVF file for any JTAG adapter that plays SVF. See
 [PLD firmware](pld-firmware.md#r5-ic2-atf1502as).
 

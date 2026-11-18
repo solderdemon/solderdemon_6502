@@ -8,15 +8,17 @@ r5 boards have one ATF1502AS CPLD (IC2) instead of the two r4 GALs and the 555. 
 
 ## r5: IC2 (ATF1502AS)
 
+For Linux and USB-Blaster, see the [ATF1502AS programming guide](./USB_BLASTER_ATF1502_PROGRAMMING.md).
+
 | Position | Function | Directory | Programming file |
 | --- | --- | --- | --- |
-| IC2 | Address decoder, glue logic and reset generator | [cpld](../code/pld/cpld) | `ic2_glue.jed` |
+| IC2 | Address decoder, glue logic and reset generator | [cpld](../code/firmware/pld/cpld) | `ic2_glue.jed` |
 
 The source is CUPL (`ic2_glue.pld`). It needs WinCUPL and Atmel's fitter; the
 [`dinoboards/cpld-toolchain`](https://codeberg.org/dinoboards/cpld-toolchain) Docker image bundles both:
 
 ```sh
-bash code/pld/cpld/build.sh          # -> ic2_glue.jed and ic2_glue.fit
+bash code/firmware/pld/cpld/build.sh          # -> ic2_glue.jed and ic2_glue.fit
 python tools/check_cpld.py           # equations against the r4 GAL fuses, and the reset counter
 ```
 
@@ -40,8 +42,8 @@ The TL866/T48 route used for the GALs below does not apply to IC2.
 
 | Position | Function | Directory | Programming file |
 | --- | --- | --- | --- |
-| IC2 | Address decoder | [address_decoder](../code/pld/address_decoder) | `ic2_address_decoder.jed` |
-| IC5 | Glue logic | [glue](../code/pld/glue) | `ic5_glue_logic.jed` |
+| IC2 | Address decoder | [address_decoder](../code/firmware/pld/address_decoder) | `ic2_address_decoder.jed` |
+| IC5 | Glue logic | [glue](../code/firmware/pld/glue) | `ic5_glue_logic.jed` |
 
 Both `burn.sh` scripts use the `ATF22V10C(UES)` profile. The source files specify the `GAL22V10` architecture; this does not mean any GAL is a suitable replacement for the actual device. Check the chip markings and your board schematic.
 
@@ -59,18 +61,18 @@ The checked-in JEDEC headers identify **GALasm 2.1**. Rebuilding requires GALasm
 From the repository root, build each PLD separately:
 
 ```sh
-cd code/pld/address_decoder
+cd code/firmware/pld/address_decoder
 galasm ic2_address_decoder.pld
 ```
 
 ```sh
-cd code/pld/glue
+cd code/firmware/pld/glue
 galasm ic5_glue_logic.pld
 ```
 
 The second block also starts from the repository root. The executable name depends on your installation: use `GALasm` instead of `galasm` if that is its name.
 
-Compilation must finish without errors and generate the corresponding `.jed`. Review the pin reports and run `git diff -- code/pld` from the repository root to inspect changes. Do not program after a failed build: an older JEDEC file may still be present. This repository has no separate PLD Makefile.
+Compilation must finish without errors and generate the corresponding `.jed`. Review the pin reports and run `git diff -- code/firmware/pld` from the repository root to inspect changes. Do not program after a failed build: an older JEDEC file may still be present. This repository has no separate PLD Makefile.
 
 If the equations have not changed, you can use the checked-in JEDEC files after confirming the board revision and device assignments.
 
@@ -79,7 +81,7 @@ If the equations have not changed, you can use the checked-in JEDEC files after 
 With board power disconnected, remove IC2 and insert it into the programmer according to its placement instructions. From the repository root:
 
 ```sh
-cd code/pld/address_decoder
+cd code/firmware/pld/address_decoder
 bash burn.sh
 ```
 
@@ -94,7 +96,7 @@ minipro -p 'ATF22V10C(UES)' -w ic2_address_decoder.jed
 Insert IC5 into the programmer separately. From the repository root:
 
 ```sh
-cd code/pld/glue
+cd code/firmware/pld/glue
 bash burn.sh
 ```
 

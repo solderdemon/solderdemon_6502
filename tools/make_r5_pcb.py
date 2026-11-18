@@ -15,7 +15,7 @@ What changes against r4:
   - every pad takes its net from the r5 schematic's netlist, so board and schematic agree;
   - all signal copper goes (tools/route_r5.py routes every signal afresh); the r4 power copper,
     planes and the upper half of the placement stay;
-  - design/kicad/solderdemon_6502.csv, the component list, is rewritten from the board.
+  - design/solderdemon_6502.csv, the component list, is rewritten from the board.
 
 The SolderDemon identity (logo, names, title block, revision r1) is added last, on the routed
 board, by tools/brand_r1.py.
@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 import pcbnew as pcb
 
 ROOT = Path(__file__).resolve().parents[1]
-KICAD = ROOT / 'design' / 'kicad'
+KICAD = ROOT / 'design'
 NAME = 'solderdemon_6502'                                # SolderDemon 6502 r1; r4 was rosco_6502
 BOARD = KICAD / f'{NAME}.kicad_pcb'
 PROJECT = [KICAD / f'{NAME}.kicad_pro', KICAD / f'{NAME}.kicad_prl']

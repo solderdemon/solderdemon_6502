@@ -2,7 +2,7 @@
 
 r5 changes three things and leaves every other symbol, wire and label of r4 where it was:
   - IC2 + IC5 (two ATF22V10C) and IC4 (the NE555 reset timer, with C19, C20 and R9) become one
-    ATF1502AS-10JU44 in a PLCC-44 socket, still called IC2 (code/pld/cpld/ic2_glue.pld);
+    ATF1502AS-10JU44 in a PLCC-44 socket, still called IC2 (code/firmware/pld/cpld/ic2_glue.pld);
   - J8, a 10-pin JTAG header, programs it in circuit;
   - S1 now pulls the CPLD's reset input low directly, with R8 (3K3, like every other pull-up) as
     its pull-up.
@@ -20,21 +20,21 @@ The result is the first SolderDemon revision, SolderDemon 6502 r1: the project i
 solderdemon_6502 and the title block carries the SolderDemon identity (TITLE_BLOCK), with the
 upstream notice kept in one comment line (CERN OHL 3.1 and 3.4b). The symbol library keeps its rosco_6502 name.
 
-    python tools/make_r5_sch.py     # writes design/kicad/solderdemon_6502.kicad_sch and .pdf, rosco_6502.kicad_sym
+    python tools/make_r5_sch.py     # writes design/solderdemon_6502.kicad_sch and .pdf, rosco_6502.kicad_sym
 """
 from pathlib import Path
-import math, re, subprocess, sys, uuid
+import math, os, re, subprocess, sys, uuid
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sexpr import parse, props, quote  # noqa: E402
 import cupl  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-KICAD = ROOT / 'design' / 'kicad'
 SCH_BASE = 'design/kicad/rosco_6502.kicad_sch'           # r4 in git, under its upstream name
-SCH = 'design/kicad/solderdemon_6502.kicad_sch'
+SCH = 'design/solderdemon_6502.kicad_sch'
 PROJECT_OLD, PROJECT = 'rosco_6502', 'solderdemon_6502'
-LIB = 'design/kicad/rosco_6502.kicad_sym'
+LIB_BASE = 'design/kicad/rosco_6502.kicad_sym'
+LIB = 'design/rosco_6502.kicad_sym'
 BASE = 'febedf81d62ee84a51998f37c9de908616646e20'                                         # r4, as last committed
 TITLE_BLOCK = '''(title_block
     (title "SolderDemon 6502")
@@ -87,7 +87,7 @@ def r4_netlist():
     return {(n.get('ref'), n.get('pin')): net.get('name') for net in root.iter('net') for n in net.iter('node')}
 
 
-CLI = 'C:/Program Files/KiCad/10.0/bin/kicad-cli.exe'
+CLI = os.environ.get('KICAD_CLI', 'C:/Program Files/KiCad/10.0/bin/kicad-cli.exe')
 
 
 # ---- geometry ------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ def instance(uid, sheet, lib_id, ref, value, footprint, xy, pins, fields, datash
 
 def cpld_pins():
     """pin -> (signal, pin type, side). The pinout is read from the .pld, nowhere else."""
-    dev = cupl.Device((ROOT / 'code/pld/cpld/ic2_glue.pld').read_text())
+    dev = cupl.Device((ROOT / 'code/firmware/pld/cpld/ic2_glue.pld').read_text())
     out = {}
     for pin, name in dev.pins.items():
         kind = 'input' if name in dev.inputs else 'output'
@@ -344,7 +344,7 @@ def build():
         net = CPLD_NET.get(n, n)
         shape = {'input': 'input', 'output': 'output', 'open_collector': 'tri_state'}.get(k, 'passive')
         add.append(label(uid, net, xy, d, shape))
-    add.append(text_note(uid, 'code/pld/cpld/ic2_glue.pld', (X - 15.24, Y + 45.72)))
+    add.append(text_note(uid, 'code/firmware/pld/cpld/ic2_glue.pld', (X - 15.24, Y + 45.72)))
 
     # ---- J8: JTAG ----
     jp = []
@@ -390,13 +390,15 @@ def build():
     out = out.replace(f'(project "{PROJECT_OLD}"', f'(project "{PROJECT}"')
     (ROOT / SCH).write_text(out, encoding='utf-8', newline='\n')
     # the same symbol in the project library, so the schematic and the library agree
-    lib = git_show(LIB)
+    lib = git_show(LIB_BASE)
     sym = cpld_lib.replace('"rosco_6502:ATF1502AS-10JU44"', '"ATF1502AS-10JU44"')
     sym = ''.join(line[2:] + NL for line in sym.splitlines())
     end = lib.rstrip().rindex(')')
     (ROOT / LIB).write_text(lib[:end] + sym + lib[end:], encoding='utf-8', newline=NL)
 
-    subprocess.run([CLI, 'sch', 'export', 'pdf', '-o', str(ROOT / SCH).replace('.kicad_sch', '.pdf'), str(ROOT / SCH)],
+    pdf = ROOT / 'manufacturing/solderdemon_6502-schematic.pdf'
+    pdf.parent.mkdir(exist_ok=True)
+    subprocess.run([CLI, 'sch', 'export', 'pdf', '-o', str(pdf), str(ROOT / SCH)],
                    check=True, capture_output=True)
 
     print(f'removed {len(cut)} items, added {len(add)}; orphaned pins relabelled: '
